@@ -1,0 +1,29 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="neonBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00bfff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0080ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="neonGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00ff80;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00cc66;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="20" cy="20" r="15" fill="url(#neonBlue)" filter="url(#glow)" opacity="0.8"/>
+  
+  <!-- Music note -->
+  <path d="M15 25 L15 10 L25 8 L25 23 M15 25 A3 3 0 1 1 15 25 M25 23 A3 3 0 1 1 25 23" stroke="white" stroke-width="2" fill="white"/>
+  
+  <!-- Text -->
+  <text x="45" y="16" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="url(#neonBlue)" filter="url(#glow)">Hey It's</text>
+  <text x="45" y="32" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="url(#neonGreen)" filter="url(#glow)">Music</text>
+</svg>

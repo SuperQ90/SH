@@ -1,0 +1,22 @@
+{
+  "name": "AI Music Radio",
+  "short_name": "AI Music Radio",
+  "description": "Discover and share AI-generated music",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "entertainment"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/"
+}

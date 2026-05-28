@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Music Radio - AI Music Radio Station</title>
+
+    <!-- App Store Compliance Meta Tags -->
+    <meta
+      name="description"
+      content="AI Music Radio - Discover and share AI-generated music. Stream, upload, and explore a world of artificial intelligence created music."
+    />
+    <meta
+      name="keywords"
+      content="AI music, artificial intelligence, music streaming, music discovery, AI radio"
+    />
+    <meta name="author" content="AI Music Radio" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- PWA and Mobile App Meta Tags -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AI Music Radio" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="AI Music Radio" />
+    <meta property="og:description" content="Discover and share AI-generated music" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://aimusicradio.com" />
+
+    <!-- Cache Control (HTTP caching only; does NOT affect localStorage/session) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <script>
+      // Fine to keep as a build/debug flag
+      window.__CACHE_BUST__ = Date.now();
+
+      // Optional manual hard reset:
+      // Visit: https://yoursite.com/?reset=1
+      // This is NOT run by default anymore because it breaks auth persistence.
+      try {
+        const params = new URLSearchParams(location.search);
+        if (params.get("reset") === "1") {
+          localStorage.clear();
+          sessionStorage.clear();
+          if ("caches" in window) {
+            caches.keys().then((names) => Promise.all(names.map((n) => caches.delete(n))));
+          }
+        }
+      } catch {}
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
