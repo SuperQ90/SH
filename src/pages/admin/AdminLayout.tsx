@@ -188,6 +188,18 @@ export default function AdminLayout() {
                 Payments
               </NavLink>
             </li>
+            <li>
+              <NavLink
+                to="/admin/message-reports"
+                className={({ isActive }) =>
+                  `block px-5 py-3 text-sm ${
+                    isActive ? "bg-slate-800 text-sky-300" : "text-slate-200"
+                  }`
+                }
+              >
+                Message Reports
+              </NavLink>
+            </li>
           </ul>
         </nav>
         <main className="flex-1 p-6">

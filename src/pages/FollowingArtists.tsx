@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Home, Users, RefreshCw } from "lucide-react";
+import MessageUserButton from "@/components/MessageUserButton";
 
 const DEFAULT_AVATAR = "/placeholder.svg";
 
@@ -129,13 +130,15 @@ const FollowingArtists: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {artists.map((artist) => (
-              <Link
+              <Card
                 key={artist.artist_user_id}
-                to={`/artist/${artist.artist_slug}`}
-                className="group block"
+                className="p-4 bg-black/40 border-cyan-500/20 hover:border-cyan-400/50 transition-colors h-full"
               >
-                <Card className="p-4 bg-black/40 border-cyan-500/20 hover:border-cyan-400/50 transition-colors h-full">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
+                  <Link
+                    to={`/artist/${artist.artist_slug}`}
+                    className="flex items-center gap-3 min-w-0 flex-1 group"
+                  >
                     <img
                       src={artist.profile_image_url || DEFAULT_AVATAR}
                       alt={artist.display_name || artist.artist_slug}
@@ -149,22 +152,27 @@ const FollowingArtists: React.FC = () => {
                         /{artist.artist_slug}
                       </p>
                     </div>
+                  </Link>
+                  <MessageUserButton
+                    otherUserId={artist.artist_user_id}
+                    otherName={artist.display_name || artist.artist_slug}
+                    className="border-violet-500/40 text-violet-300 hover:bg-violet-500/10 shrink-0"
+                  />
+                </div>
+                {artist.genres && artist.genres.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {artist.genres.slice(0, 3).map((g) => (
+                      <Badge
+                        key={g}
+                        variant="secondary"
+                        className="text-[10px] max-w-full truncate"
+                      >
+                        {g}
+                      </Badge>
+                    ))}
                   </div>
-                  {artist.genres && artist.genres.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {artist.genres.slice(0, 3).map((g) => (
-                        <Badge
-                          key={g}
-                          variant="secondary"
-                          className="text-[10px] max-w-full truncate"
-                        >
-                          {g}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </Card>
-              </Link>
+                )}
+              </Card>
             ))}
           </div>
         )}

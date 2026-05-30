@@ -12,7 +12,7 @@ import { Track } from "@/types/music";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatUnderscores } from "@/lib/utils";
-import { Bell, Crown, Users } from "lucide-react";
+import { Crown, Users, Music2 } from "lucide-react";
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -104,7 +104,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="stats">Stats</TabsTrigger>
+            <TabsTrigger value="stats">Engagement</TabsTrigger>
           </TabsList>
 
 
@@ -169,14 +169,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
               </Button>
               <Button
                 onClick={() => {
-                  navigate("/notifications");
+                  navigate("/hire-requests");
                   onClose();
                 }}
                 variant="outline"
                 className="w-full justify-start"
               >
-                <Bell className="w-4 h-4 mr-2 shrink-0" />
-                Notifications
+                <Music2 className="w-4 h-4 mr-2 shrink-0" />
+                Hire Requests
               </Button>
             </div>
           </TabsContent>

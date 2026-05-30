@@ -11,11 +11,14 @@ import {
 } from "@/lib/notifications";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Home, Bell, CheckCheck, Loader2, UserPlus, MessageCircle } from "lucide-react";
+import { Home, Bell, CheckCheck, Loader2, UserPlus, MessageCircle, Music2 } from "lucide-react";
 
 function NotificationIcon({ type }: { type: AppNotification["type"] }) {
   if (type === "new_follower") {
     return <UserPlus className="w-5 h-5 text-cyan-400" />;
+  }
+  if (type === "hire_request") {
+    return <Music2 className="w-5 h-5 text-amber-400" />;
   }
   return <MessageCircle className="w-5 h-5 text-emerald-400" />;
 }

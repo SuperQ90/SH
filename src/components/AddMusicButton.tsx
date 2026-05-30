@@ -6,9 +6,10 @@ import { useAuth } from '@/contexts/AuthContext';
 interface AddMusicButtonProps {
   onAddMusic: () => void;
   onShowAuth: () => void;
+  className?: string;
 }
 
-const AddMusicButton: React.FC<AddMusicButtonProps> = ({ onAddMusic, onShowAuth }) => {
+const AddMusicButton: React.FC<AddMusicButtonProps> = ({ onAddMusic, onShowAuth, className }) => {
   const { user } = useAuth();
 
   const handleClick = () => {
@@ -24,7 +25,7 @@ const AddMusicButton: React.FC<AddMusicButtonProps> = ({ onAddMusic, onShowAuth 
       onClick={handleClick}
       variant="outline"
       size="sm"
-      className="bg-cyan-500/20 text-cyan-200 border-cyan-400 hover:bg-cyan-500/30 hover:border-cyan-300 text-xs"
+      className={`bg-cyan-500/20 text-cyan-200 border-cyan-400 hover:bg-cyan-500/30 hover:border-cyan-300 text-xs ${className ?? ""}`}
     >
       <Plus className="w-3 h-3 mr-1" />
       Add Music

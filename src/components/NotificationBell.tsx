@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, CheckCheck, Loader2, UserPlus, MessageCircle } from "lucide-react";
+import { Bell, CheckCheck, Loader2, UserPlus, MessageCircle, Music2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -35,6 +35,9 @@ function formatRelativeTime(iso: string): string {
 function NotificationIcon({ type }: { type: AppNotification["type"] }) {
   if (type === "new_follower") {
     return <UserPlus className="w-4 h-4 text-cyan-400 shrink-0" />;
+  }
+  if (type === "hire_request") {
+    return <Music2 className="w-4 h-4 text-amber-400 shrink-0" />;
   }
   return <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />;
 }

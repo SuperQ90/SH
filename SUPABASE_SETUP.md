@@ -232,6 +232,76 @@ Run `supabase/migrations/20260528130000_notifications.sql` in the Supabase SQL E
 
 Test: header **bell** icon, follow an artist, comment on someone's song (while signed in as another user).
 
+### 9. Hire requests ("Want a song? Hire Me")
+
+Run `supabase/migrations/20260528140000_hire_requests.sql` after the notifications migration. It adds:
+
+- `hire_requests` table with RLS
+- Extends notification types for `hire_request`
+- RPCs: `submit_hire_request`, `update_hire_request_status`, `list_hire_requests_received`, `list_hire_requests_sent`
+
+Test: artist page **Want a song? Hire Me** → artist gets bell notification → **Profile → Stats → Hire Requests** (Received tab).
+
+### 10. Direct messaging
+
+Run `supabase/migrations/20260528150000_direct_messages.sql` after the hire requests migration. It adds:
+
+- `message_threads`, `message_thread_participants`, `messages`, `message_blocks` tables with RLS
+- Unread DMs use **message inbox** badge only (`get_unread_message_count`), not the bell
+- Anti-spam in RPCs: rate limits, duplicate detection, blocks, max new threads per day
+- RPCs: `get_or_create_message_thread`, `send_message`, `list_message_threads`, `list_thread_messages`, `mark_message_thread_read`, `get_unread_message_count`, `block_message_user`
+
+Test: artist page **Message** → send chat → recipient sees **messages icon** badge only (not the bell) → **Profile → Messages** or `/messages`.
+
+### 12. Messages inbox only (no bell for DMs)
+
+Run `supabase/migrations/20260528163000_messages_inbox_only_alerts.sql` so new DMs do not appear on the notification bell.
+
+### 11. Message read receipts (tick marks)
+
+Run `supabase/migrations/20260528160000_message_receipts.sql` after direct messages. It adds:
+
+If the conversation page shows **"Failed to load conversation"** or **`thread_id` is ambiguous**, run:  
+`supabase/migrations/20260528162000_fix_thread_id_ambiguous.sql`  
+(then **Settings → API → Reload schema** in Supabase).
+
+It adds:
+
+- `messages.delivered_at` — set when the recipient loads the thread
+- Updated `list_thread_messages` returns `receipt_status` for your outgoing messages: `sent` (one white tick), `delivered` (two white ticks), `read` (two dark green ticks when the other person opened the thread)
+
+### 13. Receipt UX (delivered vs read timing)
+
+Run `supabase/migrations/20260528164000_receipt_ux.sql` — adds `p_mark_delivered` to `list_thread_messages`. The app marks **delivered** when the recipient loads messages and **read** after ~1.2s of viewing (or on send/focus).
+
+### 14. Inbox delivery ack (delivered when message badge syncs)
+
+Run `supabase/migrations/20260528165000_inbox_delivery_ack.sql` — adds `acknowledge_inbox_deliveries()`. The header **messages** icon and `/messages` inbox call `syncMessageInbox()` on load and when Realtime events arrive, so senders see **two white ticks** before the recipient opens the thread.
+
+### 15. Realtime messaging (WebSocket)
+
+Run `supabase/migrations/20260528170000_messages_realtime.sql` — adds `messages`, `message_threads`, and `message_thread_participants` to the `supabase_realtime` publication.
+
+The app uses **Supabase Realtime** (WebSocket) via `src/lib/messagesRealtime.ts`:
+
+- **Inbox** (badge, toast, thread list): listens for new/updated messages and thread rows (RLS limits events to your conversations).
+- **Open chat**: per-thread channel for new messages and receipt updates.
+- **Fallback**: a 90s HTTP poll remains if the socket disconnects.
+
+After running the migration, confirm in Supabase **Database → Publications** that those tables are listed under `supabase_realtime`, then **Settings → API → Reload schema**.
+
+### 16. Messaging extensions (permissions, collaboration, reports, media)
+
+Run `supabase/migrations/20260528180000_messaging_extensions.sql`:
+
+- **`profiles.messaging_policy`** — `everyone` | `followers_only` | `mutual_follow` | `nobody` (Profile page setting)
+- **`message_threads.thread_kind`** — `direct` | `collaboration` (Collaborate button on artist pages)
+- **Message attachments** — `attachment_url` / `attachment_type` on `messages`; storage bucket `message-attachments`
+- **`message_reports`** + RPCs: `submit_message_report`, `submit_conversation_report`, `can_message_user`, `update_messaging_policy`
+- **Admin:** `/admin/message-reports` via `admin_list_message_reports`, `admin_resolve_message_report`
+
+Collaboration templates live in `src/lib/collaborationTemplates.ts`. Report from chat via the flag icon in `MessageThread`.
+
 ## Environment Variables
 
 Make sure your `.env.local` file contains:

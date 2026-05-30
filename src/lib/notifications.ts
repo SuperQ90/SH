@@ -3,12 +3,15 @@ import { supabase } from "@/lib/supabase";
 
 export const NOTIFICATIONS_CHANGED_EVENT = "airadio:notifications-changed";
 
-export type NotificationType = "new_follower" | "song_comment";
+export type NotificationType =
+  | "new_follower"
+  | "song_comment"
+  | "hire_request";
 
 export type AppNotification = {
   id: string;
   type: NotificationType;
-  entity_type: "artist" | "song";
+  entity_type: "artist" | "song" | "hire_request";
   entity_id: string;
   actor_user_id: string | null;
   payload: Record<string, unknown>;
@@ -44,7 +47,7 @@ export async function fetchNotifications(
   return (data ?? []).map((row) => ({
     id: row.id,
     type: row.type as NotificationType,
-    entity_type: row.entity_type as "artist" | "song",
+    entity_type: row.entity_type as AppNotification["entity_type"],
     entity_id: row.entity_id,
     actor_user_id: row.actor_user_id ?? null,
     payload: (row.payload as Record<string, unknown>) ?? {},
@@ -83,6 +86,17 @@ export function getNotificationMessage(n: AppNotification): string {
   if (n.type === "new_follower") {
     return `${name} started following you`;
   }
+  if (n.type === "hire_request") {
+    const requester =
+      (typeof n.payload.requester_name === "string" && n.payload.requester_name) ||
+      name;
+    const preview =
+      typeof n.payload.brief_preview === "string" ? n.payload.brief_preview : "";
+    if (preview) {
+      return `${requester} wants you to make a song: ${preview}`;
+    }
+    return `${requester} sent a hire request — wants a custom song`;
+  }
   const title =
     (typeof n.payload.song_title === "string" && n.payload.song_title) ||
     "your song";
@@ -98,6 +112,9 @@ export function getNotificationMessage(n: AppNotification): string {
 
 /** Route path when user clicks a notification */
 export function getNotificationHref(n: AppNotification): string {
+  if (n.type === "hire_request") {
+    return "/hire-requests";
+  }
   if (n.type === "song_comment" && n.entity_type === "song") {
     return `/song/${n.entity_id}`;
   }

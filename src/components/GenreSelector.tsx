@@ -69,54 +69,48 @@ const GenreSelector: React.FC<GenreSelectorProps> = ({ selectedGenre, onGenreSel
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <AddMusicButton 
-            onAddMusic={handleAddMusic}
-            onShowAuth={handleShowAuth}
-          />
-          <Button
-            onClick={handleFeaturedArtists}
-            variant="outline"
-            size="sm"
-            className="animate-pulse bg-[#00BFFF]/30 text-[#39FF14] border-[#00BFFF] hover:bg-[#00BFFF]/50 hover:border-[#00BFFF] hover:text-[#39FF14] text-xs shadow-[0_0_10px_rgba(0,191,255,0.4)]"
-          >
-            <Users className="w-3 h-3 mr-1" />
-            Featured Artists
-          </Button>
-
-        </div>
-        <h2 className="text-sm font-normal text-orange-400">Select Genre</h2>
-      </div>
-
-      
-      <div className="w-full max-w-xs">
-        <Select
-          value={selectedGenre || ''}
-          onValueChange={(value) => {
-            if (value && GENRES.includes(value as Genre)) {
-              onGenreSelect(value as Genre);
-            }
-          }}
+    <div className="w-full max-w-xs space-y-3">
+      <div className="flex items-center gap-2 w-full">
+        <AddMusicButton 
+          onAddMusic={handleAddMusic}
+          onShowAuth={handleShowAuth}
+          className="flex-1 min-w-0 w-full"
+        />
+        <Button
+          onClick={handleFeaturedArtists}
+          variant="outline"
+          size="sm"
+          className="shrink-0 animate-pulse bg-[#00BFFF]/30 text-[#39FF14] border-[#00BFFF] hover:bg-[#00BFFF]/50 hover:border-[#00BFFF] hover:text-[#39FF14] text-xs shadow-[0_0_10px_rgba(0,191,255,0.4)] px-2"
         >
-          <SelectTrigger className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-cyan-400 focus:border-cyan-400 px-2 py-1 h-8">
-            <SelectValue placeholder="Choose a genre..." />
-          </SelectTrigger>
-          <SelectContent className="bg-gray-900 border-gray-700">
-            {GENRES.map((genre) => (
-              <SelectItem
-                key={genre}
-                value={genre}
-                className="text-white hover:bg-white/10 focus:bg-white/10"
-              >
-                {genre}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Users className="w-3 h-3 mr-1 shrink-0" />
+          <span className="truncate">Featured Artists</span>
+        </Button>
       </div>
-      
+
+      <Select
+        value={selectedGenre || ''}
+        onValueChange={(value) => {
+          if (value && GENRES.includes(value as Genre)) {
+            onGenreSelect(value as Genre);
+          }
+        }}
+      >
+        <SelectTrigger className="w-full bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-cyan-400 focus:border-cyan-400 px-2 py-1 h-8">
+          <SelectValue placeholder="Choose a genre..." />
+        </SelectTrigger>
+        <SelectContent className="bg-gray-900 border-gray-700">
+          {GENRES.map((genre) => (
+            <SelectItem
+              key={genre}
+              value={genre}
+              className="text-white hover:bg-white/10 focus:bg-white/10"
+            >
+              {genre}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
       {selectedGenre && (
         <div className="flex items-center space-x-2">
           <span className="text-cyan-200 text-sm">Selected:</span>

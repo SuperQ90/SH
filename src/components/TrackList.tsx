@@ -81,15 +81,15 @@ const TrackList: React.FC<TrackListProps> = ({
   const fetchUnreadCounts = useCallback(async (songIds: string[]) => {
     if (!user || songIds.length === 0) return;
     try {
-      const { data, error } = await supabase.functions.invoke('get-unread-comments', {
-        body: { song_ids: songIds },
+      const { data, error } = await supabase.rpc('get_unread_comment_counts', {
+        p_song_ids: songIds,
       });
       if (error) {
         console.error('Failed to fetch unread comments:', error);
         return;
       }
-      if (data?.unread) {
-        setUnreadCounts(data.unread);
+      if (data && typeof data === 'object') {
+        setUnreadCounts(data as Record<string, number>);
       }
     } catch (e: any) {
       console.error('Failed to fetch unread comments:', e?.message || e);

@@ -1,6 +1,6 @@
 // src/App.tsx
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Toaster } from "@/components/ui/toaster";
@@ -8,6 +8,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { MessageInboxProvider } from "@/contexts/MessageInboxContext";
 import { useServiceWorker } from "@/hooks/useServiceWorker";
 
 // pages
@@ -29,6 +30,7 @@ import UsersAdmin from "@/pages/admin/UsersAdmin";
 import SongsAdmin from "@/pages/admin/SongsAdmin";
 import FeaturedAdmin from "@/pages/admin/FeaturedAdmin";
 import PaymentsAdmin from "@/pages/admin/PaymentsAdmin";
+import MessageReportsAdmin from "@/pages/admin/MessageReportsAdmin";
 import Pricing from "@/pages/Pricing";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import ArtistPage from "@/pages/ArtistPage";
@@ -38,6 +40,9 @@ import SongPage from "@/pages/SongPage";
 import AllArtists from "@/pages/AllArtists";
 import FollowingArtists from "@/pages/FollowingArtists";
 import Notifications from "@/pages/Notifications";
+import HireRequests from "@/pages/HireRequests";
+import Messages from "@/pages/Messages";
+import MessageThread from "@/pages/MessageThread";
 
 
 
@@ -56,6 +61,10 @@ const queryClient = new QueryClient();
 
 const AppContent: React.FC = () => {
   useServiceWorker();
+  const location = useLocation();
+  const hideFooter =
+    location.pathname === "/messages" ||
+    location.pathname.startsWith("/messages/");
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -73,6 +82,9 @@ const AppContent: React.FC = () => {
         <Route path="/my-likes" element={<MyLikes />} />
         <Route path="/following-artists" element={<FollowingArtists />} />
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/hire-requests" element={<HireRequests />} />
+        <Route path="/messages" element={<Messages />} />
+        <Route path="/messages/:threadId" element={<MessageThread />} />
 
         {/* playlists */}
         <Route path="/playlists" element={<Playlists />} />
@@ -115,6 +127,7 @@ const AppContent: React.FC = () => {
           <Route path="songs" element={<SongsAdmin />} />
           <Route path="featured" element={<FeaturedAdmin />} />
           <Route path="payments" element={<PaymentsAdmin />} />
+          <Route path="message-reports" element={<MessageReportsAdmin />} />
         </Route>
 
         {/* legacy admin route */}
@@ -131,7 +144,7 @@ const AppContent: React.FC = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
 
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
   );
 };
@@ -144,7 +157,9 @@ const App: React.FC = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <AppContent />
+            <MessageInboxProvider>
+              <AppContent />
+            </MessageInboxProvider>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

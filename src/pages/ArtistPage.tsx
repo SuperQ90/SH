@@ -15,8 +15,13 @@ import {
 import TrackList from "@/components/TrackList";
 import TipArtistModal from "@/components/TipArtistModal";
 import FollowArtistButton from "@/components/FollowArtistButton";
+import HireArtistModal from "@/components/HireArtistModal";
+import CollaborateArtistModal from "@/components/CollaborateArtistModal";
+import MessageArtistButton from "@/components/MessageArtistButton";
+import { AuthModal } from "@/components/AuthModal";
+import { useAuth } from "@/contexts/AuthContext";
 import { Track } from "@/types/music";
-import { ArrowLeft, DollarSign, Music, Play, Heart } from "lucide-react";
+import { ArrowLeft, DollarSign, Music, Play, Heart, Music2, Handshake } from "lucide-react";
 
 
 type ArtistProfile = {
@@ -46,12 +51,16 @@ const prettyLinkLabel = (v: string) => {
 
 const ArtistPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { user } = useAuth();
   const [artist, setArtist] = useState<ArtistProfile | null>(null);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedGenre, setSelectedGenre] = useState<string>("all");
   const [paymentMethods, setPaymentMethods] = useState<any>(null);
   const [showTipModal, setShowTipModal] = useState(false);
+  const [showHireModal, setShowHireModal] = useState(false);
+  const [showCollabModal, setShowCollabModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [totalPlays, setTotalPlays] = useState<number>(0);
   const [totalLikes, setTotalLikes] = useState<number>(0);
 
@@ -331,9 +340,40 @@ const ArtistPage: React.FC = () => {
                   })}
               </div>
 
-              {/* Follow + Tip */}
+              {/* Follow + Message + Hire + Tip */}
               <div className="mt-4 flex flex-col sm:flex-row sm:flex-wrap gap-3">
                 <FollowArtistButton artistUserId={artist.user_id} />
+                {user?.id !== artist.user_id && (
+                  <>
+                    <MessageArtistButton
+                      otherUserId={artist.user_id}
+                      otherName={
+                        artist.display_name || artist.artist_slug || "this artist"
+                      }
+                      onSignInRequired={() => setShowAuthModal(true)}
+                    />
+                    <Button
+                      onClick={() => {
+                        if (!user) {
+                          setShowAuthModal(true);
+                          return;
+                        }
+                        setShowCollabModal(true);
+                      }}
+                      className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white"
+                    >
+                      <Handshake className="w-4 h-4 mr-2" />
+                      Collaborate
+                    </Button>
+                    <Button
+                      onClick={() => setShowHireModal(true)}
+                      className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white"
+                    >
+                      <Music2 className="w-4 h-4 mr-2" />
+                      Want a song? Hire Me
+                    </Button>
+                  </>
+                )}
                 <Button
                   onClick={() => setShowTipModal(true)}
                   className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
@@ -419,6 +459,30 @@ const ArtistPage: React.FC = () => {
         artistName={artist?.display_name || artist?.artist_slug || "this artist"}
         paymentMethods={paymentMethods}
       />
+
+      <HireArtistModal
+        isOpen={showHireModal}
+        onClose={() => setShowHireModal(false)}
+        artistUserId={artist.user_id}
+        artistName={artist.display_name || artist.artist_slug}
+        onSignInRequired={() => {
+          setShowHireModal(false);
+          setShowAuthModal(true);
+        }}
+      />
+
+      <CollaborateArtistModal
+        isOpen={showCollabModal}
+        onClose={() => setShowCollabModal(false)}
+        artistUserId={artist.user_id}
+        artistName={artist.display_name || artist.artist_slug || "this artist"}
+        onSignInRequired={() => {
+          setShowCollabModal(false);
+          setShowAuthModal(true);
+        }}
+      />
+
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   );
 };

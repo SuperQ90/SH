@@ -18,6 +18,7 @@ import { AuthModal } from "./AuthModal";
 import { AddSongModal } from "./AddSongModal";
 import ProfileModal from "./ProfileModal";
 import NotificationBell from "./NotificationBell";
+import MessagesLink from "./MessagesLink";
 import { useToast } from "@/hooks/use-toast";
 import { useServiceWorker } from "@/hooks/useServiceWorker";
 import { supabase } from "@/lib/supabase";
@@ -303,6 +304,7 @@ const Header: React.FC<HeaderProps> = ({ onSongAdded }) => {
             </Button>
             {user ? (
               <div className="flex items-center space-x-3">
+                <MessagesLink />
                 <NotificationBell />
                 <div className="text-right">
                   <p className="text-foreground font-medium flex items-center gap-2 justify-end">
@@ -348,14 +350,23 @@ const Header: React.FC<HeaderProps> = ({ onSongAdded }) => {
             )}
           </div>
 
-          <div className="md:hidden">
+          <div className="md:hidden flex flex-col items-end gap-1 shrink-0 self-start">
             <Button
               variant="ghost"
               size="sm"
+              className="h-9 w-9 p-0"
+              aria-label={showMobileMenu ? "Close menu" : "Open menu"}
+              aria-expanded={showMobileMenu}
               onClick={() => setShowMobileMenu(!showMobileMenu)}
             >
               <Menu className="w-5 h-5" />
             </Button>
+            {user && (
+              <div className="flex items-center gap-0.5">
+                <MessagesLink />
+                <NotificationBell />
+              </div>
+            )}
           </div>
         </div>
 
@@ -429,9 +440,6 @@ const Header: React.FC<HeaderProps> = ({ onSongAdded }) => {
               )}
               {user ? (
                 <>
-                  <div className="flex justify-center py-1">
-                    <NotificationBell />
-                  </div>
                   <div
                     className="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-accent"
                     onClick={() => {

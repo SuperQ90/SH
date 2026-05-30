@@ -21,6 +21,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import MySongsPanel from "@/components/MySongsPanel";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  updateMessagingPolicy,
+  type MessagingPolicy,
+  MESSAGING_POLICY_LABELS,
+} from "@/lib/messages";
 
 const AVAILABLE_PLANS = [
   { id: "creator-monthly", label: "Creator (monthly)" },
@@ -61,10 +73,11 @@ type ProfileRow = {
   profile_image_url: string | null;
   hero_image_url: string | null;
   additional_links: string[] | null;
+  messaging_policy: string | null;
 };
 
 const PROFILE_SELECT =
-  "display_name,website,bio,genres,role,subscription_status,subscription_plan,subscription_current_period_end,artist_slug,profile_image_url,hero_image_url,additional_links" as const;
+  "display_name,website,bio,genres,role,subscription_status,subscription_plan,subscription_current_period_end,artist_slug,profile_image_url,hero_image_url,additional_links,messaging_policy" as const;
 
 // Edge Function uploader – expects formData with (kind, file)
 // returns { ok, publicUrl, path }
@@ -184,6 +197,9 @@ const Profile: React.FC = () => {
   const [bio, setBio] = useState("");
   const [genres, setGenres] = useState(""); // csv text for UI
   const [role, setRole] = useState<string>("free");
+  const [messagingPolicy, setMessagingPolicy] =
+    useState<MessagingPolicy>("everyone");
+  const [savingMessagingPolicy, setSavingMessagingPolicy] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -406,6 +422,18 @@ const Profile: React.FC = () => {
 
           setProfileImageUrl(profile.profile_image_url ?? null);
           setHeroImageUrl(profile.hero_image_url ?? null);
+
+          const policy = profile.messaging_policy;
+          if (
+            policy === "everyone" ||
+            policy === "followers_only" ||
+            policy === "mutual_follow" ||
+            policy === "nobody"
+          ) {
+            setMessagingPolicy(policy);
+          } else {
+            setMessagingPolicy("everyone");
+          }
 
           // Only set editable form fields from DB if there is NO draft
           if (!hasDraft) {
@@ -975,6 +1003,48 @@ const Profile: React.FC = () => {
               placeholder="Afrobeat, Rock"
               disabled={loading}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm mb-1">Who can message you</label>
+            <Select
+              value={messagingPolicy}
+              disabled={loading || savingMessagingPolicy}
+              onValueChange={(v) => {
+                const policy = v as MessagingPolicy;
+                setMessagingPolicy(policy);
+                setSavingMessagingPolicy(true);
+                void updateMessagingPolicy(policy)
+                  .then(() => {
+                    // saved
+                  })
+                  .catch((err: unknown) => {
+                    alert(
+                      err instanceof Error
+                        ? err.message
+                        : "Could not update messaging settings"
+                    );
+                  })
+                  .finally(() => setSavingMessagingPolicy(false));
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.keys(MESSAGING_POLICY_LABELS) as MessagingPolicy[]).map(
+                  (key) => (
+                    <SelectItem key={key} value={key}>
+                      {MESSAGING_POLICY_LABELS[key]}
+                    </SelectItem>
+                  )
+                )}
+              </SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Controls who can start new conversations with you. Existing chats
+              are not affected.
+            </p>
           </div>
 
           <div>
